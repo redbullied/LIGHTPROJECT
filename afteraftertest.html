@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta viewport="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Zoomed Image with Gamepad Control</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .fullscreen-image {
+            width: 200%; /* Adjust zoom level as needed */
+            height: 200%;
+            background-image: url('color.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: absolute;
+            /* Initial position set to center the image */
+            transform: translate(-50%, -50%);
+            left: 50%;
+            top: 50%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="fullscreen-image" id="zoomedImage"></div>
+
+<script>
+    let imagePosX = 0, imagePosY = 0; // Image position offsets
+    const moveSpeed = 5; // Adjust this value to control movement sensitivity
+    let rafId = null;
+
+    function updateImagePosition(axisX, axisY) {
+        // Update position offsets based on axis values
+        imagePosX += axisX * moveSpeed;
+        imagePosY += axisY * moveSpeed;
+
+        // Apply the updated position
+        const image = document.getElementById('zoomedImage');
+        image.style.transform = `translate(-50%, -50%) translate(${imagePosX}px, ${imagePosY}px)`;
+    }
+
+    function gamepadLoop() {
+        const gamepads = navigator.getGamepads();
+        if (gamepads[0]) {
+            const gp = gamepads[0];
+            const axisX = gp.axes[0];
+            const axisY = gp.axes[1];
+            updateImagePosition(axisX, axisY);
+        }
+        rafId = requestAnimationFrame(gamepadLoop);
+    }
+
+    window.addEventListener('gamepadconnected', (e) => {
+        console.log('Gamepad connected:', e.gamepad);
+        if (!rafId) {
+            gamepadLoop();
+        }
+    });
+
+    window.addEventListener('gamepaddisconnected', (e) => {
+        console.log('Gamepad disconnected:', e.gamepad);
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    });
+</script>
+</body>
+</html>

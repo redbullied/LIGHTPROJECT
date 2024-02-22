@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Change with Gamepad and Navigation</title>
+</head>
+<body>
+
+<script>
+    let requestAnimationFrameId;
+
+    function changeBackgroundColor(color) {
+        document.body.style.backgroundColor = color;
+    }
+
+    function navigateToAfterAfterTest() {
+        window.location.href = 'afteraftertest.html'; // Navigate to afteraftertest.html when B0 is pressed
+    }
+
+    function gamepadHandler() {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        for (let gamepad of gamepads) {
+            if (gamepad) {
+                if (gamepad.buttons[0].pressed) { // B0 for navigation
+                    navigateToAfterAfterTest();
+                    return; // Stop execution to prevent further color change actions
+                } else if (gamepad.buttons[1].pressed) { // B1 for red
+                    changeBackgroundColor('red');
+                } else if (gamepad.buttons[2].pressed) { // B2 for green
+                    changeBackgroundColor('green');
+                } else if (gamepad.buttons[3].pressed) { // B3 for blue
+                    changeBackgroundColor('blue');
+                } else if (gamepad.buttons[4].pressed) { // B4 for yellow
+                    changeBackgroundColor('yellow');
+                }
+            }
+        }
+        requestAnimationFrameId = requestAnimationFrame(gamepadHandler);
+    }
+
+    window.addEventListener("gamepadconnected", () => {
+        console.log("Gamepad connected. Listening for button presses...");
+        requestAnimationFrameId = requestAnimationFrame(gamepadHandler);
+    });
+
+    window.addEventListener("gamepaddisconnected", () => {
+        console.log("Gamepad disconnected.");
+        cancelAnimationFrame(requestAnimationFrameId);
+    });
+</script>
+</body>
+</html>

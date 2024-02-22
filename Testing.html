@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamepad Interaction Example</title>
+    <style>
+        body {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <img src="pressstart.gif" alt="Press Start" loop="infinite">
+
+    <script>
+        let requestAnimationFrameId;
+
+        function navigateToAfterTest() {
+            window.location.href = 'aftertest.html'; // Navigate to aftertest.html when B0 is pressed
+        }
+
+        function gamepadHandler() {
+            const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+            for (let gamepad of gamepads) {
+                if (gamepad && gamepad.buttons[0].pressed) {
+                    navigateToAfterTest();
+                    cancelAnimationFrame(requestAnimationFrameId); // Stop checking once navigation is triggered
+                    return;
+                }
+            }
+            requestAnimationFrameId = requestAnimationFrame(gamepadHandler);
+        }
+
+        window.addEventListener("gamepadconnected", () => {
+            console.log("Gamepad connected. Listening for button B0 press...");
+            requestAnimationFrameId = requestAnimationFrame(gamepadHandler);
+        });
+
+        window.addEventListener("gamepaddisconnected", () => {
+            console.log("Gamepad disconnected.");
+            cancelAnimationFrame(requestAnimationFrameId);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamepad Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #status { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Gamepad Test</h1>
+    <div id="status">Connect your gamepad and press any button.</div>
+    <script>
+        let hasGamepad = false;
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        function gamepadHandler(event, connecting) {
+            const gamepad = event.gamepad;
+            if (connecting) {
+                console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+                            gamepad.index, gamepad.id, gamepad.buttons.length, gamepad.axes.length);
+                hasGamepad = true;
+                updateStatus(`Gamepad connected: ${gamepad.id}`);
+                requestAnimationFrame(updateGamepadState);
+            } else {
+                console.log("Gamepad disconnected from index %d: %s",
+                            gamepad.index, gamepad.id);
+                hasGamepad = false;
+                updateStatus("Connect your gamepad and press any button.");
+            }
+        }
+
+        window.addEventListener("gamepadconnected", (e) => gamepadHandler(e, true));
+        window.addEventListener("gamepaddisconnected", (e) => gamepadHandler(e, false));
+
+        function updateGamepadState() {
+            if (!hasGamepad) return;
+            const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+            for (let gamepad of gamepads) {
+                if (gamepad) {
+                    let gpDetails = `Gamepad ${gamepad.index}: ${gamepad.id}. Buttons pressed: `;
+                    gamepad.buttons.forEach((button, index) => {
+                        if (button.pressed) gpDetails += `B${index} `;
+                    });
+                    gpDetails += `. Axes: `;
+                    gamepad.axes.forEach((axis, index) => {
+                        gpDetails += `A${index}: ${axis.toFixed(2)} `;
+                    });
+                    updateStatus(gpDetails);
+                }
+            }
+            requestAnimationFrame(updateGamepadState);
+        }
+    </script>
+</body>
+</html>
