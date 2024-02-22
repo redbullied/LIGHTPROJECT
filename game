@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Fighting Game</title>
+    <style>
+        .arena {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background-color: #f0f0f0;
+            border: 2px solid #000;
+            margin: 20px auto;
+        }
+        .fighter {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: red;
+        }
+        .fighter#fighter2 {
+            background-color: blue;
+            left: 100px; /* Initial position of the second fighter */
+        }
+    </style>
+</head>
+<body>
+
+<div class="arena">
+    <div id="fighter1" class="fighter" style="left: 50px; bottom: 0;"></div>
+    <div id="fighter2" class="fighter" style="left: 500px; bottom: 0;"></div>
+</div>
+
+<script>
+    const fighter1 = document.getElementById('fighter1');
+    const fighter2 = document.getElementById('fighter2');
+
+    let fighter1Position = 50;
+    let fighter2Position = 500;
+
+    document.addEventListener('keydown', (event) => {
+        const key = event.key;
+        const step = 10; // How many pixels the fighter moves
+
+        // Fighter 1 Controls
+        if (key === 'a') { // Move left
+            fighter1Position -= step;
+            fighter1.style.left = fighter1Position + 'px';
+        } else if (key === 'd') { // Move right
+            fighter1Position += step;
+            fighter1.style.left = fighter1Position + 'px';
+        } else if (key === 'w') { // Attack (Placeholder action)
+            console.log('Fighter 1 attacks!');
+        }
+
+        // Fighter 2 Controls
+        if (key === 'ArrowLeft') { // Move left
+            fighter2Position -= step;
+            fighter2.style.left = fighter2Position + 'px';
+        } else if (key === 'ArrowRight') { // Move right
+            fighter2Position += step;
+            fighter2.style.left = fighter2Position + 'px';
+        } else if (key === 'ArrowUp') { // Attack (Placeholder action)
+            console.log('Fighter 2 attacks!');
+        }
+    });
+</script>
+
+</body>
+</html>

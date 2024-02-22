@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gamepad Controlled Square</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        #square {
+            position: absolute;
+            width: 200px; /* Now 4x larger */
+            height: 200px; /* Now 4x larger */
+            background-color: black;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+
+<div id="square"></div>
+
+<script>
+    let square = document.getElementById('square');
+    let position = { x: window.innerWidth / 2 - square.offsetWidth / 2, y: window.innerHeight / 2 - square.offsetHeight / 2 };
+
+    function updateSquarePosition() {
+        square.style.left = position.x + 'px';
+        square.style.top = position.y + 'px';
+    }
+
+    function gamepadHandler() {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        for (let gamepad of gamepads) {
+            if (gamepad) {
+                // Joystick movement
+                const leftStickX = gamepad.axes[0];
+                const leftStickY = gamepad.axes[1];
+                const moveSpeed = 2; // Adjust for faster or slower movement
+
+                position.x += leftStickX * moveSpeed;
+                position.y += leftStickY * moveSpeed;
+
+                // Prevent the square from moving outside the viewport
+                position.x = Math.max(0, Math.min(window.innerWidth - square.offsetWidth, position.x));
+                position.y = Math.max(0, Math.min(window.innerHeight - square.offsetHeight, position.y));
+
+                // Change color based on button presses
+                if (gamepad.buttons[1].pressed) square.style.backgroundColor = 'red';    // B1
+                if (gamepad.buttons[2].pressed) square.style.backgroundColor = 'green';  // B2
+                if (gamepad.buttons[3].pressed) square.style.backgroundColor = 'blue';   // B3
+                if (gamepad.buttons[4].pressed) square.style.backgroundColor = 'yellow'; // B4
+
+                updateSquarePosition();
+            }
+        }
+        requestAnimationFrame(gamepadHandler);
+    }
+
+    window.addEventListener('gamepadconnected', () => {
+        console.log("Gamepad connected. Listening for input...");
+        requestAnimationFrame(gamepadHandler);
+    });
+
+    window.addEventListener('gamepaddisconnected', () => {
+        console.log("Gamepad disconnected.");
+    });
+</script>
+
+</body>
+</html>

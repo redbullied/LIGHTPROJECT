@@ -24,18 +24,32 @@
 
     <script>
         let requestAnimationFrameId;
+        let buttonPressStartTime = 0; // Variable to track when the button was first pressed
+        const requiredPressDuration = 1000; // Duration in milliseconds that the button needs to be held down (now 1 second)
 
         function navigateToAfterTest() {
-            window.location.href = 'aftertest.html'; // Navigate to aftertest.html when B0 is pressed
+            window.location.href = '1.html'; // Navigate to aftertest.html when B0 is held for 1 second
         }
 
         function gamepadHandler() {
             const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
             for (let gamepad of gamepads) {
-                if (gamepad && gamepad.buttons[0].pressed) {
-                    navigateToAfterTest();
-                    cancelAnimationFrame(requestAnimationFrameId); // Stop checking once navigation is triggered
-                    return;
+                if (gamepad) {
+                    const b0Pressed = gamepad.buttons[0].pressed;
+                    const now = Date.now();
+
+                    if (b0Pressed && buttonPressStartTime === 0) {
+                        // Button is pressed; start the timer
+                        buttonPressStartTime = now;
+                    } else if (b0Pressed && (now - buttonPressStartTime) >= requiredPressDuration) {
+                        // Button has been held for the required duration; navigate to the next page
+                        navigateToAfterTest();
+                        cancelAnimationFrame(requestAnimationFrameId); // Stop checking once navigation is triggered
+                        return;
+                    } else if (!b0Pressed && buttonPressStartTime !== 0) {
+                        // Button was released before reaching the required duration; reset timer
+                        buttonPressStartTime = 0;
+                    }
                 }
             }
             requestAnimationFrameId = requestAnimationFrame(gamepadHandler);

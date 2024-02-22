@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Change with Gamepad and Navigation</title>
+</head>
+<body>
+
+<script>
+    let requestAnimationFrameId;
+    let buttonPressStartTime = 0; // Variable to track when the button was first pressed
+    const requiredPressDuration = 1000; // Duration in milliseconds that the button needs to be held down
+
+    function changeBackgroundColor(color) {
+        document.body.style.backgroundColor = color;
+    }
+
+    function navigateToAfterAfterTest() {
+        window.location.href = '2.html'; // Navigate to afteraftertest.html when B0 is held for 1 second
+    }
+
+    function gamepadHandler() {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        for (let gamepad of gamepads) {
+            if (gamepad) {
+                const b0Pressed = gamepad.buttons[0].pressed;
+                const now = Date.now();
+
+                if (b0Pressed && buttonPressStartTime === 0) {
+                    // Button is pressed; start the timer
+                    buttonPressStartTime = now;
+                } else if (b0Pressed && (now - buttonPressStartTime) >= requiredPressDuration) {
+                    // Button has been held for the required duration; navigate to the next page
+                    navigateToAfterAfterTest();
+                    return; // Stop execution to prevent further actions
+                } else if (!b0Pressed && buttonPressStartTime !== 0) {
+                    // Button was released before reaching the required duration; reset timer
+                    buttonPressStartTime = 0;
+                }
+
+                // Handle other button presses for color changes
+                if (gamepad.buttons[1].pressed) { // B1 for red
+                    changeBackgroundColor('red');
+                } else if (gamepad.buttons[2].pressed) { // B2 for green
+                    changeBackgroundColor('green');
+                } else if (gamepad.buttons[3].pressed) { // B3 for blue
+                    changeBackgroundColor('blue');
+                } else if (gamepad.buttons[4].pressed) { // B4 for yellow
+                    changeBackgroundColor('yellow');
+                }
+            }
+        }
+        requestAnimationFrameId = requestAnimationFrame(gamepadHandler);
+    }
+
+    window.addEventListener("gamepadconnected", () => {
+        console.log("Gamepad connected. Listening for button presses...");
+        requestAnimationFrameId = requestAnimationFrame(gamepadHandler);
+    });
+
+    window.addEventListener("gamepaddisconnected", () => {
+        console.log("Gamepad disconnected.");
+        cancelAnimationFrame(requestAnimationFrameId);
+    });
+</script>
+</body>
+</html>
