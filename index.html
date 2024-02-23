@@ -28,6 +28,7 @@
         const requiredPressDuration = 1000; // Duration in milliseconds that the button needs to be held down (now 1 second)
 
         function navigateToAfterTest() {
+            console.log("Navigation triggered.");
             window.location.href = '1.html'; // Navigate to aftertest.html when B0 is held for 1 second
         }
 
@@ -37,17 +38,18 @@
                 if (gamepad) {
                     const b0Pressed = gamepad.buttons[0].pressed;
                     const now = Date.now();
+                    console.log(`Gamepad detected: button 0 pressed status: ${b0Pressed}`);
 
                     if (b0Pressed && buttonPressStartTime === 0) {
-                        // Button is pressed; start the timer
                         buttonPressStartTime = now;
+                        console.log("Button 0 press started");
                     } else if (b0Pressed && (now - buttonPressStartTime) >= requiredPressDuration) {
-                        // Button has been held for the required duration; navigate to the next page
+                        console.log("Button 0 has been held down for the required duration, navigating...");
                         navigateToAfterTest();
                         cancelAnimationFrame(requestAnimationFrameId); // Stop checking once navigation is triggered
                         return;
                     } else if (!b0Pressed && buttonPressStartTime !== 0) {
-                        // Button was released before reaching the required duration; reset timer
+                        console.log("Button 0 was released before the required duration.");
                         buttonPressStartTime = 0;
                     }
                 }
